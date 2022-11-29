@@ -3,26 +3,28 @@ import { useEffect, useState } from "react";
 import SingleCard from "./components/SingleCard";
 
 const cardImages = [
-  { src: "/img/helmet-1.png" },
-  { src: "/img/potion-1.png" },
-  { src: "/img/ring-1.png" },
-  { src: "/img/scroll-1.png" },
-  { src: "/img/shield-1.png" },
-  { src: "/img/sword-1.png" },
+  { src: "/img/helmet-1.png", matched: false },
+  { src: "/img/potion-1.png", matched: false },
+  { src: "/img/ring-1.png", matched: false },
+  { src: "/img/scroll-1.png", matched: false },
+  { src: "/img/shield-1.png", matched: false },
+  { src: "/img/sword-1.png", matched: false },
 ];
 
 const App: React.FC = () => {
   const [cards, setCards] =
-    useState<{ src: string; id?: number }[]>(cardImages);
+    useState<{ src: string; id?: number; matched: boolean }[]>(cardImages);
   const [turns, setTurns] = useState<number>(0);
 
   const [choiceOne, setChoiceOne] = useState<{
     src: string;
     id?: number;
+    matched: boolean;
   } | null>(null);
   const [choiceTwo, setChoiceTwo] = useState<{
     src: string;
     id?: number;
+    matched: boolean;
   } | null>(null);
 
   //shuffle the cards
@@ -35,11 +37,15 @@ const App: React.FC = () => {
     setTurns(0);
   };
 
-  console.log(cards);
-  console.log(turns);
+  // console.log(cards);
+  // console.log(turns);
 
   //handle a choice
-  const handlerClick = (card: { src: string; id?: number }) => {
+  const handlerClick = (card: {
+    src: string;
+    id?: number;
+    matched: boolean;
+  }) => {
     // console.log(card.id);
     //if choiceOne is null, it means no selection for the first card
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
@@ -58,14 +64,26 @@ const App: React.FC = () => {
     //when both the choices are selected
     if (choiceOne && choiceTwo) {
       if (choiceOne.src === choiceTwo.src) {
-        console.log("matched");
+        // console.log("matched");
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.id === choiceOne.id || card.id === choiceTwo.id) {
+              return { ...card, matched: true };
+            } else {
+              return card;
+            }
+          });
+        });
         resetTurn();
       } else {
-        console.log("not matched");
-        resetTurn();
+        // console.log("not matched");
+        //resetting quick so setting up a time out
+        setTimeout(() => resetTurn(), 1000);
       }
     }
   }, [choiceOne, choiceTwo]);
+
+  console.log(cards);
 
   return (
     <div className="App">
@@ -74,7 +92,12 @@ const App: React.FC = () => {
 
       <div className="card-grid">
         {cards.map((card, index) => (
-          <SingleCard key={index} card={card} onClickHandler={handlerClick} />
+          <SingleCard
+            key={index}
+            card={card}
+            onClickHandler={handlerClick}
+            flipped={card === choiceOne || card === choiceTwo || card.matched}
+          />
         ))}
       </div>
     </div>
