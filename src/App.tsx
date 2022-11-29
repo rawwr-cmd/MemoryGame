@@ -16,6 +16,15 @@ const App: React.FC = () => {
     useState<{ src: string; id?: number }[]>(cardImages);
   const [turns, setTurns] = useState<number>(0);
 
+  const [choiceOne, setChoiceOne] = useState<{
+    src: string;
+    id?: number;
+  } | null>(null);
+  const [choiceTwo, setChoiceTwo] = useState<{
+    src: string;
+    id?: number;
+  } | null>(null);
+
   //shuffle the cards
   const shuffleCards = () => {
     const shuffleCards = [...cardImages, ...cardImages]
@@ -29,14 +38,21 @@ const App: React.FC = () => {
   console.log(cards);
   console.log(turns);
 
+  //handle a choice
+  const handlerClick = (card: { src: string; id?: number }) => {
+    // console.log(card.id);
+    //if choiceOne is null, it means no selection for the first card
+    choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+  };
+
   return (
     <div className="App">
       <h1>Magic Match</h1>
       <button onClick={shuffleCards}>New Game</button>
 
       <div className="card-grid">
-        {cards.map((card) => (
-          <SingleCard key={card.id} src={card.src} />
+        {cards.map((card, index) => (
+          <SingleCard key={index} card={card} onClickHandler={handlerClick} />
         ))}
       </div>
     </div>
