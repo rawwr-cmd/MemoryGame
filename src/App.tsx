@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SingleCard from "./components/SingleCard";
 
 const cardImages = [
@@ -43,7 +43,29 @@ const App: React.FC = () => {
     // console.log(card.id);
     //if choiceOne is null, it means no selection for the first card
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
+    //not here because state will take  some time to load
   };
+
+  //compare two selected cards(everytime the choice changes, useEffect will come into play)
+  useEffect(() => {
+    //reset choices & increase turns
+    const resetTurn = () => {
+      setChoiceOne(null);
+      setChoiceTwo(null);
+      setTurns((prevTurns) => prevTurns + 1);
+    };
+
+    //when both the choices are selected
+    if (choiceOne && choiceTwo) {
+      if (choiceOne.src === choiceTwo.src) {
+        console.log("matched");
+        resetTurn();
+      } else {
+        console.log("not matched");
+        resetTurn();
+      }
+    }
+  }, [choiceOne, choiceTwo]);
 
   return (
     <div className="App">
