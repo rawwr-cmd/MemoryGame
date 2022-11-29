@@ -21,18 +21,24 @@ const App: React.FC = () => {
     id?: number;
     matched: boolean;
   } | null>(null);
+
   const [choiceTwo, setChoiceTwo] = useState<{
     src: string;
     id?: number;
     matched: boolean;
   } | null>(null);
 
+  //to enable two cards at a time
+  const [disabled, setDisabled] = useState<boolean>(false);
   //shuffle the cards
   const shuffleCards = () => {
     const shuffleCards = [...cardImages, ...cardImages]
       .sort(() => Math.random() - 0.5) //for shuffling the position of the cards
       .map((card) => ({ ...card, id: Math.random() })); //for shuffling the cards
 
+    //resetting the game upon start up
+    setChoiceOne(null);
+    setChoiceTwo(null);
     setCards(shuffleCards);
     setTurns(0);
   };
@@ -59,10 +65,12 @@ const App: React.FC = () => {
       setChoiceOne(null);
       setChoiceTwo(null);
       setTurns((prevTurns) => prevTurns + 1);
+      setDisabled(false);
     };
 
     //when both the choices are selected
     if (choiceOne && choiceTwo) {
+      setDisabled(true);
       if (choiceOne.src === choiceTwo.src) {
         // console.log("matched");
         setCards((prevCards) => {
@@ -85,6 +93,11 @@ const App: React.FC = () => {
 
   console.log(cards);
 
+  //start a new game automatically
+  useEffect(() => {
+    shuffleCards();
+  }, []);
+
   return (
     <div className="App">
       <h1>Magic Match</h1>
@@ -97,9 +110,11 @@ const App: React.FC = () => {
             card={card}
             onClickHandler={handlerClick}
             flipped={card === choiceOne || card === choiceTwo || card.matched}
+            disabled={disabled}
           />
         ))}
       </div>
+      <p>Turns : {turns}</p>
     </div>
   );
 };

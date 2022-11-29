@@ -9,15 +9,20 @@ interface SingleCardProps {
   }) => void;
 
   flipped: boolean;
+  disabled: boolean;
 }
 
 const SingleCard: React.FC<SingleCardProps> = ({
   card,
   onClickHandler,
   flipped,
+  disabled,
 }) => {
   const handleClick = () => {
-    onClickHandler(card);
+    // console.log(disabled);
+    if (!disabled) {
+      onClickHandler(card);
+    }
   };
 
   //   console.log(flipped);
